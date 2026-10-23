@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="my">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Auto Movie Recap — Starter</title>
+<style>
+:root{color-scheme:dark;--bg:#080808;--panel:#151515;--red:#ff1d2d;--white:#f5f5f5;--muted:#aaa;--border:#303030}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--white);font:15px/1.5 system-ui,-apple-system,"Noto Sans Myanmar",sans-serif}
+header{padding:22px 16px;background:#101010;border-bottom:1px solid var(--border)}header h1{font-size:23px;margin:0 0 5px}header p{margin:0;color:var(--muted)}
+main{max-width:900px;margin:auto;padding:16px;display:grid;gap:14px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:15px}
+h2{font-size:17px;margin:0 0 12px}.hint{color:var(--muted);font-size:13px}
+label{display:block;margin:10px 0 5px;font-weight:600}input[type=file],textarea,input[type=text],select{width:100%;background:#080808;color:var(--white);border:1px solid #444;border-radius:9px;padding:10px}
+textarea{min-height:100px;resize:vertical}input[type=range]{width:100%;accent-color:var(--red)}
+button{background:var(--red);color:white;border:0;border-radius:10px;padding:12px 15px;font-weight:800;cursor:pointer;width:100%;margin-top:10px}
+button:disabled{opacity:.45;cursor:not-allowed}.secondary{background:#292929;border:1px solid #444}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.preview-wrap{position:relative;background:#000;border-radius:10px;overflow:hidden;min-height:160px;display:grid;place-items:center}
+video{width:100%;max-height:65vh;display:block;background:#000}.sub-preview{position:absolute;bottom:8%;left:4%;right:4%;text-align:center;font-weight:800;text-shadow:2px 2px 3px #000,-1px -1px #000;white-space:pre-wrap;pointer-events:none}
+.blur-preview{position:absolute;border:2px dashed var(--red);background:#ffffff18;pointer-events:none}
+.progress{height:10px;background:#333;border-radius:10px;overflow:hidden;margin:10px 0}.bar{height:100%;width:0;background:var(--red);transition:width .2s}
+.status{font-size:13px;color:var(--muted);overflow-wrap:anywhere}.pill{display:inline-block;border:1px solid #555;border-radius:99px;padding:3px 8px;font-size:12px;color:#ddd}
+a{color:#ff6974}footer{color:#888;font-size:12px;padding:0 16px 24px;max-width:900px;margin:auto}
+@media(max-width:600px){.row{grid-template-columns:1fr}header h1{font-size:20px}}
+</style>
+</head>
+<body>
+<header><h1>🎬 Auto Movie Recap</h1><p>Starter Version · အမဲနောက်ခံ / အနီရောင်ခလုတ် / အဖြူစာ</p></header>
+<main>
+<section class="card">
+<h2>၁။ Video နဲ့ ကိုယ်ပိုင်အသံ Upload</h2>
+<label for="videoFile">မူရင်း Video</label><input id="videoFile" type="file" accept="video/*">
+<label for="audioFile">ကိုယ်တိုင်သွင်းထားတဲ့ အသံဖိုင် (ရွေးချယ်နိုင်)</label><input id="audioFile" type="file" accept="audio/*">
+<p class="hint">အသံဖိုင်မရွေးထားရင် မူရင်းဗီဒီယိုအသံကို သုံးမယ်။ Browser ထဲမှာပဲ ဖိုင်တွေကိုဖွင့်ပြီး စမ်းသပ်ပါတယ်။</p>
+</section>
+<section class="card">
+<h2>၂။ Recap Script နဲ့ မြန်မာစာတန်းထိုး</h2>
+<label for="script">Recap Script — ကိုယ်ပြောမယ့် စာသား</label><textarea id="script" placeholder="ဥပမာ - ဒီလူငယ်ဟာ အခန်းထဲဝင်လာပြီး လျှို့ဝှက်ချက်တစ်ခုကို တွေ့ရှိသွားပါတယ်။"></textarea>
+<label for="subtitle">Preview မှာပြမယ့် မြန်မာစာတန်း</label><textarea id="subtitle" placeholder="ဗီဒီယိုပေါ်မှာ ပြချင်တဲ့ စာတန်းကို ဒီမှာရေးပါ"></textarea>
+<div class="row">
+<div><label for="fontSize">စာတန်းအရွယ်အစား <span id="fontSizeVal">24</span>px</label><input id="fontSize" type="range" min="14" max="48" value="24"></div>
+<div><label for="subColor">စာတန်းအရောင်</label><select id="subColor"><option value="#ffffff">အဖြူ</option><option value="#ffff00">အဝါ</option><option value="#00ff99">အစိမ်း</option><option value="#ff5555">အနီ</option><option value="#55ccff">အပြာ</option></select></div>
+</div>
+<p class="hint">မှတ်ချက် — ဒီ Starter မှာ Script ကို ကိုယ်တိုင်ရေး/ပြင်နိုင်ပါတယ်။ Script ကို အလိုအလျောက်အသံဖိုင်အဖြစ် ပြောင်းပေးတာ မပါသေးပါ။</p>
+</section>
+<section class="card">
+<h2>၃။ မူရင်းစာတန်း Blur ချိန်ညှိ</h2>
+<p class="hint">အောက်ကအကွက်က Preview ပေါ်ရှိ blur နေရာကို ကိုယ်တိုင်ရွှေ့/အရွယ်ပြောင်းဖို့ အညွှန်းပါ။ ဒီ preview overlay ဟာ မူရင်းဗီဒီယိုဖိုင်ကို မပြောင်းလဲပါ။</p>
+<div class="row">
+<div><label for="blurX">ဘယ်မှအကွာအဝေး <span id="blurXVal">10</span>%</label><input id="blurX" type="range" min="0" max="80" value="10"></div>
+<div><label for="blurY">အပေါ်မှအကွာအဝေး <span id="blurYVal">10</span>%</label><input id="blurY" type="range" min="0" max="80" value="10"></div>
+<div><label for="blurW">အကျယ် <span id="blurWVal">35</span>%</label><input id="blurW" type="range" min="5" max="90" value="35"></div>
+<div><label for="blurH">အမြင့် <span id="blurHVal">12</span>%</label><input id="blurH" type="range" min="3" max="50" value="12"></div>
+</div>
+<label for="blurAmount">Blur ပြင်းအား <span id="blurAmountVal">8</span></label><input id="blurAmount" type="range" min="0" max="20" value="8">
+<label><input id="showBlur" type="checkbox" checked> Preview မှာ Blur အကွက်ပြရန်</label>
+</section>
+<section class="card">
+<h2>၄။ Preview</h2>
+<div class="preview-wrap" id="previewWrap">
+<video id="videoPreview" controls playsinline></video>
+<div class="blur-preview" id="blurPreview"></div>
+<div class="sub-preview" id="subPreview"></div>
+</div>
+<p class="hint">Video ကိုရွေးပြီးရင် ဒီနေရာမှာ preview ပြပါမယ်။</p>
+</section>
+<section class="card">
+<h2>၅။ Export MP4</h2>
+<p class="hint">MP4 Export အတွက် browser ထဲမှာ FFmpeg ကိုဖွင့်ပြီး processing လုပ်ပါတယ်။ ပထမအကြိမ်မှာ အင်တာနက်လိုပြီး ဖုန်း memory/ဗီဒီယိုအရွယ်အစားအပေါ်မူတည်ပြီး အချိန်ကြာနိုင်ပါတယ်။ စမ်းသပ်ဖို့ ဗီဒီယိုတိုတိုနဲ့စပါ။</p>
+<button id="exportBtn">MP4 Export စတင်မည်</button>
+<div class="progress"><div class="bar" id="bar"></div></div>
+<div class="status" id="status">အဆင်သင့်ဖြစ်နေပါပြီ။</div>
+<a id="downloadLink" hidden download="movie-recap.mp4">MP4 ကို Download လုပ်ရန်</a>
+</section>
+</main>
+<footer>Starter demo: files stay in your browser tab. မူပိုင်ခွင့်ရှိတဲ့ ဇာတ်ကားတွေကို အသုံးပြုတဲ့အခါ သက်ဆိုင်ရာခွင့်ပြုချက်နဲ့ platform စည်းမျဉ်းတွေကို လိုက်နာပါ။</footer>
+<script type="module">
+const $=id=>document.getElementById(id);
+let videoURL=null,audioURL=null,ffmpeg=null,ffmpegReady=false;
+const video=$('videoPreview');
+$('videoFile').addEventListener('change',e=>{
+ const f=e.target.files[0]; if(!f)return;
+ if(videoURL)URL.revokeObjectURL(videoURL); videoURL=URL.createObjectURL(f); video.src=videoURL; video.load();
+ $('status').textContent='Video ရွေးပြီးပါပြီ: '+f.name;
+});
+$('audioFile').addEventListener('change',e=>{
+ const f=e.target.files[0]; if(!f)return;
+ if(audioURL)URL.revokeObjectURL(audioURL);audioURL=URL.createObjectURL(f);
+ $('status').textContent='အသံဖိုင် ရွေးပြီးပါပြီ: '+f.name;
+});
+function updatePreview(){
+ $('subPreview').textContent=$('subtitle').value;
+ $('subPreview').style.fontSize=$('fontSize').value+'px';
+ $('subPreview').style.color=$('subColor').value;
+ const wrap=$('previewWrap'), el=$('blurPreview');
+ el.style.left=$('blurX').value+'%';el.style.top=$('blurY').value+'%';
+ el.style.width=$('blurW').value+'%';el.style.height=$('blurH').value+'%';
+ el.style.display=$('showBlur').checked?'block':'none';
+ const blur=Number($('blurAmount').value);
+ el.style.backdropFilter=blur?'blur('+Math.max(1,blur/2)+'px)':'none';
+ el.style.background=blur?'#9993':'transparent';
+ for(const id of ['fontSize','blurX','blurY','blurW','blurH','blurAmount'])$(id+'Val').textContent=$(id).value;
+}
+['subtitle','fontSize','subColor','blurX','blurY','blurW','blurH','blurAmount','showBlur'].forEach(id=>$(id).addEventListener('input',updatePreview));
+updatePreview();
+function setStatus(s,p){$('status').textContent=s;if(p!==undefined)$('bar').style.width=p+'%'}
+$('exportBtn').addEventListener('click',async()=>{
+ const vf=$('videoFile').files[0],af=$('audioFile').files[0];
+ if(!vf){setStatus('အရင်ဆုံး Video ဖိုင်ရွေးပါ။',0);return}
+ if(vf.size>180*1024*1024){setStatus('ဒီ Starter မှာ 180 MB အောက် ဗီဒီယိုနဲ့စမ်းပါ။ ဖုန်း memory အတွက် ပိုသေးတာအကြံပြုပါတယ်။',0);return}
+ $('exportBtn').disabled=true;$('downloadLink').hidden=true;
+ try{
+  if(!ffmpeg){
+   setStatus('FFmpeg loading လုပ်နေပါတယ်… အင်တာနက်လိုပါတယ်။',5);
+   const {FFmpeg}=await import('https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/esm/index.js');
+   const {toBlobURL}=await import('https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.1/dist/esm/index.js');
+   ffmpeg=new FFmpeg();
+   ffmpeg.on('progress',({progress})=>setStatus('Video ကို ပြောင်းနေပါတယ်… '+Math.round(progress*100)+'%',10+Math.round(progress*80)));
+   ffmpeg.on('log',({message})=>{if(message) $('status').textContent=message.slice(-180)});
+   const base='https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd';
+   await ffmpeg.load({coreURL:await toBlobURL(base+'/ffmpeg-core.js','text/javascript'),wasmURL:await toBlobURL(base+'/ffmpeg-core.wasm','application/wasm')});
+  }
+  setStatus('ဖိုင်တွေကို ပြင်ဆင်နေပါတယ်…',12);
+  const inputName='input_'+(vf.name.match(/\.[^.]+$/)?.[1]||'mp4').replace(/[^a-z0-9]/gi,'');
+  await ffmpeg.writeFile(inputName,new Uint8Array(await vf.arrayBuffer()));
+  let args=['-i',inputName];
+  if(af){
+   const ext=(af.name.match(/\.[^.]+$/)?.[1]||'mp3').replace(/[^a-z0-9]/gi,'');
+   const audioName='voice.'+ext;
+   await ffmpeg.writeFile(audioName,new Uint8Array(await af.arrayBuffer()));
+   args.push('-i',audioName,'-map','0:v:0','-map','1:a:0','-c:v','libx264','-preset','ultrafast','-crf','27','-c:a','aac','-shortest','-movflags','+faststart','output.mp4');
+  }else{
+   args.push('-c:v','libx264','-preset','ultrafast','-crf','27','-c:a','aac','-movflags','+faststart','output.mp4');
+  }
+  setStatus('MP4 ထုတ်နေပါတယ်…',20);
+  await ffmpeg.exec(args);
+  const data=await ffmpeg.readFile('output.mp4');
+  const outURL=URL.createObjectURL(new Blob([data.buffer],{type:'video/mp4'}));
+  const link=$('downloadLink');link.href=outURL;link.hidden=false;link.textContent='MP4 ကို Download လုပ်ရန် ('+(data.length/1024/1024).toFixed(1)+' MB)';
+  setStatus('ပြီးပါပြီ။ အောက်က Download link ကိုနှိပ်ပါ။',100);
+ }catch(err){
+  console.error(err);
+  setStatus('Export မအောင်မြင်ပါ: '+(err?.message||err)+'. Chrome မှာ website ကို HTTPS နဲ့ဖွင့်ပြီး ဗီဒီယိုတိုတိုနဲ့ ထပ်စမ်းပါ။ ဖုန်း memory မလုံလောက်ရင် PC/Cloud server လိုနိုင်ပါတယ်။',0);
+ }finally{$('exportBtn').disabled=false}
+});
+</script>
+</body>
+</html>
