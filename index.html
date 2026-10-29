@@ -1,0 +1,475 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#06152b">
+<title>Bird Mining Empire</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#061326;color:#f4f8ff;font-family:Arial,sans-serif}
+header{padding:25px 12px;text-align:center;background:linear-gradient(135deg,#075985,#123a79,#101c49);border-bottom:2px solid #00aaff}
+header h1{margin:0;color:#ffdc55;font-size:27px;text-shadow:2px 3px #15284c}
+header p{font-size:12px;color:#c9eaff;margin:8px 0 0}
+main{max-width:760px;margin:auto;padding:12px 12px 90px}
+.panel{background:linear-gradient(145deg,#0c2340,#08192e);border:1px solid #087cc0;border-radius:15px;padding:14px;margin-bottom:12px}
+h2{font-size:17px;margin:0 0 13px;color:#c5eaff}
+.small{font-size:12px;color:#a8c4de;line-height:1.65}
+.balances{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.balance{background:#07182d;border:1px solid #17476b;border-radius:11px;padding:11px 3px;text-align:center;font-size:12px;overflow-wrap:anywhere}
+.value{font-size:22px;font-weight:bold;margin-top:8px}
+.money{color:#ffdb68}.gold{color:#ffd34f}.eggs{color:white}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.stat{padding:10px;background:#07182d;border-radius:10px;color:#9fc8e8;font-size:12px}
+.stat b{display:block;font-size:19px;color:white;margin-top:5px}
+.birds{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.bird{min-width:0;background:#06172b;border:1px solid #14517a;border-radius:12px;padding:10px 5px;text-align:center}
+.emoji{font-size:38px}
+.birdname{font-size:12px;font-weight:bold;margin-top:5px}
+.muted{font-size:11px;color:#a8c4de;line-height:1.65;margin:7px 0}
+.progress{height:7px;background:#263b52;border-radius:8px;overflow:hidden;margin:9px 0}
+.bar{height:100%;background:linear-gradient(90deg,#00d68f,#8aff54)}
+button{border:0;border-radius:10px;padding:12px 8px;font-weight:bold;cursor:pointer;font-size:12px}
+button:disabled{opacity:.4}
+.primary{width:100%;background:linear-gradient(120deg,#00b7ff,#0875ee);color:white}
+.green{width:100%;background:#00d17c;color:#032e20}
+.yellow{width:100%;background:#ffd34f;color:#382900}
+.orange{width:100%;background:#ff9f1c;color:#3c2000}
+.red{width:100%;background:#ef5267;color:white}
+.dark{width:100%;background:#243b55;color:white}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+input,select{width:100%;background:#07182d;border:1px solid #386185;border-radius:10px;padding:12px;color:white;margin:7px 0 12px;font-size:14px}
+label{font-size:12px;color:#b8d9f2}
+.tabs{position:fixed;bottom:0;left:0;right:0;display:flex;background:#07162a;border-top:1px solid #16517b;padding:6px 2px calc(6px + env(safe-area-inset-bottom));z-index:9}
+.tabs button{flex:1;background:transparent;color:#8bb7de;font-size:10px;padding:9px 1px}
+.tabs button.active{color:#00efa3}
+.hidden{display:none!important}
+.notice{font-size:11px;line-height:1.7;color:#ffc86a}
+.ok{font-size:12px;color:#72ffc1;line-height:1.7}
+.activity{font-size:11px;line-height:1.9;color:#c8dff4;overflow-wrap:anywhere}
+.coincard{background:#0a1d34;border:1px solid #21608a;border-radius:13px;padding:14px;margin-bottom:10px}
+.coinhead{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.coinicon{width:52px;height:52px;display:grid;place-items:center;border-radius:12px;background:#142d4b;font-size:32px;flex-shrink:0}
+.coinname{font-size:16px;font-weight:bold}
+.address{font-size:11px;line-height:1.6;overflow-wrap:anywhere;background:#061326;padding:10px;border-radius:8px;margin:8px 0}
+.tag{display:inline-block;background:#143b59;border-radius:20px;padding:5px 9px;font-size:10px}
+@media(max-width:370px){.value{font-size:18px}.emoji{font-size:31px}.birdname{font-size:11px}.panel{padding:10px}}
+</style>
+</head>
+<body>
+<header>
+<h1>🐦 Bird Mining Empire</h1>
+<p>COLLECT EGGS • EXCHANGE • BUILD YOUR EMPIRE</p>
+</header>
+
+<main>
+<section id="home">
+<div class="panel">
+<h2>💰 Your Assets</h2>
+<div class="balances">
+<div class="balance">🥚 Eggs<div class="value eggs" id="eggs">0</div></div>
+<div class="balance">💵 Money<div class="value money" id="money">0</div></div>
+<div class="balance">🟡 Gold<div class="value gold" id="gold">0</div></div>
+</div>
+<div class="stats">
+<div class="stat">🐣 Total Birds<b id="birdCount">1</b></div>
+<div class="stat">🥚 Eggs Produced<b id="produced">0</b></div>
+</div>
+<p class="ok">● Auto Mining Enabled</p>
+<p class="small">Eggs are collected automatically. Offline progress is calculated when you return.</p>
+</div>
+
+<div class="panel">
+<h2>🪺 Your Bird Nest</h2>
+<div class="birds" id="nest"></div>
+</div>
+
+<div class="panel">
+<h2>🛒 Bird Shop</h2>
+<div class="birds" id="shop"></div>
+<p class="small">Maximum 5 birds per type. Purchase birds using Money.</p>
+</div>
+</section>
+
+<section id="exchange" class="hidden">
+<div class="panel">
+<h2>🔄 Exchange Center</h2>
+<div class="balances">
+<div class="balance">🥚 Eggs<div class="value" id="exEggs">0</div></div>
+<div class="balance">💵 Money<div class="value money" id="exMoney">0</div></div>
+<div class="balance">🟡 Gold<div class="value gold" id="exGold">0</div></div>
+</div>
+<label for="exAmount">Egg Amount</label>
+<input id="exAmount" type="number" min="1" step="1" placeholder="Enter amount">
+<div class="row">
+<button class="primary" onclick="exchange('money')">Exchange to Money</button>
+<button class="yellow" onclick="exchange('gold')">Exchange to Gold</button>
+</div>
+<p class="small">1 Egg = 1 Money</p>
+<p class="small">3 Eggs = 2 Gold. Gold exchange requires a multiple of 3 Eggs.</p>
+<p id="exMessage" class="ok"></p>
+</div>
+</section>
+
+<section id="bonus" class="hidden">
+<div class="panel">
+<h2>🎁 Daily Bonus</h2>
+<p class="small">Claim 100 Money once per day.</p>
+<button class="green" onclick="claimBonus()">Claim Daily Bonus</button>
+<p id="bonusMessage" class="ok"></p>
+</div>
+</section>
+
+<section id="invite" class="hidden">
+<div class="panel">
+<h2>👥 Invite Friends</h2>
+<div class="stats">
+<div class="stat">👤 Invited Friends<b id="inviteCount">0</b></div>
+<div class="stat">🎁 Referral Rewards<b id="inviteRewards">0</b></div>
+</div>
+<p class="small">Earn 10 Demo Money for each simulated successful invitation.</p>
+<label for="refLink">Your Referral Link</label>
+<input id="refLink" readonly>
+<button class="primary" onclick="copyInvite()">Copy Invite Link</button>
+<p class="notice">Demo mode: the invite counter is simulated. It does not track real Telegram users.</p>
+<button class="dark" onclick="simulateInvite()">Test Demo Referral Reward (+10 Money)</button>
+</div>
+</section>
+
+<section id="deposit" class="hidden">
+<div class="panel">
+<h2>📥 Deposit</h2>
+<p class="notice">Demo interface only. No cryptocurrency is transferred or credited.</p>
+
+<div class="coincard">
+<div class="coinhead">
+<div class="coinicon">💎</div>
+<div><div class="coinname">TON</div><div class="small">The Open Network</div></div>
+</div>
+<div class="small">Deposit Address</div>
+<div class="address" id="tonAddress"></div>
+<button class="primary" onclick="copyAddress('ton')">Copy TON Address</button>
+<button class="green" style="margin-top:8px" onclick="demoDeposit('TON')">Create Demo TON Request</button>
+</div>
+
+<div class="coincard">
+<div class="coinhead">
+<div class="coinicon">💵</div>
+<div><div class="coinname">USDT</div><div class="small">Tether USD • TON Network address supplied</div></div>
+</div>
+<div class="small">Deposit Address</div>
+<div class="address" id="usdtAddress"></div>
+<button class="primary" onclick="copyAddress('usdt')">Copy USDT Address</button>
+<button class="green" style="margin-top:8px" onclick="demoDeposit('USDT')">Create Demo USDT Request</button>
+</div>
+
+<p class="notice">Important: the supplied address is shown for demo purposes only. Verify the correct network and asset support with your wallet provider before any real transfer. Do not send funds using this demo page.</p>
+</div>
+</section>
+
+<section id="withdraw" class="hidden">
+<div class="panel">
+<h2>📤 Withdraw Gold</h2>
+<div class="balance">
+<div>🟡 Available Gold</div>
+<div class="value gold" id="wGold">0</div>
+</div>
+<p class="small">Minimum withdrawal: 1,000 Gold</p>
+<p class="small">Demo conversion rate: 1,000 Gold = 1 demo currency unit</p>
+<div class="balance">
+<div class="small">Estimated Demo Payout</div>
+<div class="value money" id="payout">0</div>
+</div>
+<label for="wdAmount">Gold Amount</label>
+<input id="wdAmount" type="number" min="1000" step="1000" placeholder="Minimum 1000 Gold" oninput="updatePayout()">
+<label for="wdAddress">Wallet Address (Demo)</label>
+<input id="wdAddress" placeholder="Enter wallet address for demo request">
+<button class="orange" onclick="withdraw()">Submit Demo Withdrawal Request</button>
+<p id="wdMessage" class="ok"></p>
+<p class="notice">Demo only. Gold is not real money. No payout or crypto transfer will occur.</p>
+</div>
+</section>
+
+<section id="historyPage" class="hidden">
+<div class="panel">
+<h2>📋 Transaction History</h2>
+<div id="history" class="activity">No requests yet.</div>
+</div>
+</section>
+</main>
+
+<nav class="tabs">
+<button class="active" onclick="tab('home',this)">🏠<br>Home</button>
+<button onclick="tab('exchange',this)">🔄<br>Exchange</button>
+<button onclick="tab('bonus',this)">🎁<br>Bonus</button>
+<button onclick="tab('invite',this)">👥<br>Invite</button>
+<button onclick="tab('deposit',this)">📥<br>Deposit</button>
+<button onclick="tab('withdraw',this)">📤<br>Withdraw</button>
+<button onclick="tab('historyPage',this)">📋<br>History</button>
+</nav>
+
+<script>
+const STORE="birdEmpireDemoV3";
+const TIME="birdEmpireTimeV3";
+
+const TON_ADDRESS="UQBrPWcwCVsomS8ZHaEa-CSWjYWDTZ4Dqyki988JNhmQjujV";
+const USDT_ADDRESS="UQBrPWcwCVsomS8ZHaEa-CSWjYWDTZ4Dqyki988JNhmQjujV";
+
+const birds={
+yellow:{name:"Yellow Bird",emoji:"🐤",price:1000,rate:35,limit:5},
+blue:{name:"Blue Bird",emoji:"🐦",price:5000,rate:30,limit:5},
+red:{name:"Red Bird",emoji:"🐔",price:8000,rate:27,limit:5}
+};
+
+function fresh(){
+return {
+eggs:0,money:0,gold:0,produced:0,
+birds:{yellow:1,blue:0,red:0},
+timers:{yellow:0,blue:0,red:0},
+lastBonus:"",
+invites:0,inviteRewards:0,
+requests:[],
+history:["Welcome! Your free Yellow Bird is ready."]
+};
+}
+
+function load(){
+try{
+const old=JSON.parse(localStorage.getItem(STORE));
+if(!old)return fresh();
+const f=fresh();
+return {...f,...old,
+birds:{...f.birds,...(old.birds||{})},
+timers:{...f.timers,...(old.timers||{})},
+requests:Array.isArray(old.requests)?old.requests:[],
+history:Array.isArray(old.history)?old.history:f.history
+};
+}catch(e){return fresh();}
+}
+
+let game=load();
+
+function escapeHTML(s){
+return String(s).replace(/[&<>"']/g,c=>({
+"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+})[c]);
+}
+
+function log(s){
+game.history.unshift(new Date().toLocaleString()+" — "+s);
+game.history=game.history.slice(0,25);
+}
+
+function totalBirds(){
+return Object.values(game.birds).reduce((a,b)=>a+b,0);
+}
+
+function save(){
+try{
+localStorage.setItem(STORE,JSON.stringify(game));
+localStorage.setItem(TIME,String(Date.now()));
+}catch(e){}
+}
+
+function produce(seconds){
+if(seconds<=0)return;
+for(const [key,b] of Object.entries(birds)){
+const count=game.birds[key]||0;
+if(count<=0)continue;
+const total=(game.timers[key]||0)+seconds;
+const cycles=Math.floor(total/b.rate);
+game.timers[key]=total%b.rate;
+const amount=cycles*count;
+game.eggs+=amount;
+game.produced+=amount;
+}
+}
+
+function catchUp(){
+const now=Date.now();
+const last=Number(localStorage.getItem(TIME))||now;
+const elapsed=Math.min(30*86400,Math.max(0,Math.floor((now-last)/1000)));
+produce(elapsed);
+save();
+}
+
+function render(){
+for(const [id,val] of Object.entries({
+eggs:game.eggs,money:game.money,gold:game.gold,
+birdCount:totalBirds(),produced:game.produced,
+exEggs:game.eggs,exMoney:game.money,exGold:game.gold,wGold:game.gold,
+inviteCount:game.invites,inviteRewards:game.inviteRewards
+})){
+document.getElementById(id).textContent=val;
+}
+
+document.getElementById("nest").innerHTML=Object.entries(birds).map(([key,b])=>{
+const count=game.birds[key]||0;
+const pct=count?Math.min(100,game.timers[key]/b.rate*100):0;
+const left=count?Math.ceil(b.rate-game.timers[key]):0;
+return `<div class="bird">
+<div class="emoji">${b.emoji}</div>
+<div class="birdname">${b.name}</div>
+<div class="muted">Owned: ${count}/${b.limit}</div>
+<div class="progress"><div class="bar" style="width:${pct}%"></div></div>
+<div class="small">${count?"Next egg: "+left+"s":"Not owned"}</div>
+<div class="muted">+1 Egg / ${b.rate}s</div>
+</div>`;
+}).join("");
+
+document.getElementById("shop").innerHTML=Object.entries(birds).map(([key,b])=>{
+const count=game.birds[key]||0;
+return `<div class="bird">
+<div class="emoji">${b.emoji}</div>
+<div class="birdname">${b.name}</div>
+<div class="muted">💵 ${b.price.toLocaleString()} Money<br>Every ${b.rate}s<br>Owned: ${count}/${b.limit}</div>
+<button class="${key==="yellow"?"yellow":key==="blue"?"primary":"red"}" style="width:100%" onclick="buy('${key}')" ${count>=b.limit?"disabled":""}>${count>=b.limit?"Limit Reached":"Buy"}</button>
+</div>`;
+}).join("");
+
+const base=location.href.split("?")[0].split("#")[0];
+document.getElementById("refLink").value=base+"?ref=BIRD-DEMO-001";
+
+document.getElementById("tonAddress").textContent=TON_ADDRESS;
+document.getElementById("usdtAddress").textContent=USDT_ADDRESS;
+
+document.getElementById("history").innerHTML=game.requests.length?
+game.requests.map(r=>"• "+escapeHTML(r.type)+" — "+escapeHTML(r.amount)+" — "+escapeHTML(r.status)+" — "+escapeHTML(r.date)).join("<br>"):
+"No requests yet.";
+
+updatePayout();
+}
+
+function buy(key){
+const b=birds[key];
+if(game.birds[key]>=b.limit){alert("Bird limit reached.");return;}
+if(game.money<b.price){alert("Not enough Money. Exchange Eggs or claim your daily bonus.");return;}
+game.money-=b.price;
+game.birds[key]++;
+log("Purchased "+b.name);
+save();render();
+}
+
+function exchange(type){
+const amount=Number(document.getElementById("exAmount").value);
+const msg=document.getElementById("exMessage");
+if(!Number.isSafeInteger(amount)||amount<=0){msg.textContent="Enter a valid whole number.";return;}
+if(amount>game.eggs){msg.textContent="Not enough Eggs.";return;}
+if(type==="gold"&&amount%3!==0){msg.textContent="Gold exchange requires Eggs divisible by 3.";return;}
+game.eggs-=amount;
+if(type==="money"){
+game.money+=amount;
+log("Exchanged "+amount+" Eggs for "+amount+" Money");
+msg.textContent="Success! Received "+amount+" Money.";
+}else{
+const received=amount/3*2;
+game.gold+=received;
+log("Exchanged "+amount+" Eggs for "+received+" Gold");
+msg.textContent="Success! Received "+received+" Gold.";
+}
+document.getElementById("exAmount").value="";
+save();render();
+}
+
+function claimBonus(){
+const today=new Date().toISOString().slice(0,10);
+const msg=document.getElementById("bonusMessage");
+if(game.lastBonus===today){msg.textContent="You already claimed today's bonus.";return;}
+game.lastBonus=today;
+game.money+=100;
+log("Daily Bonus +100 Money");
+msg.textContent="Success! You received 100 Money.";
+save();render();
+}
+
+function simulateInvite(){
+game.invites++;
+game.inviteRewards+=10;
+game.money+=10;
+log("Demo referral reward +10 Money");
+save();render();
+alert("Demo reward: +10 Money. This does not represent a real invite.");
+}
+
+function copyInvite(){
+const input=document.getElementById("refLink");
+if(navigator.clipboard){
+navigator.clipboard.writeText(input.value).then(()=>alert("Referral link copied!")).catch(()=>alert(input.value));
+}else{
+input.select();
+alert("Copy your referral link.");
+}
+}
+
+function copyAddress(type){
+const address=type==="ton"?TON_ADDRESS:USDT_ADDRESS;
+if(navigator.clipboard){
+navigator.clipboard.writeText(address).then(()=>alert(type.toUpperCase()+" address copied. Demo only.")).catch(()=>alert(address));
+}else alert(address);
+}
+
+function addRequest(type,amount,status,asset,address){
+game.requests.unshift({type,amount,status,asset,address,date:new Date().toLocaleString()});
+game.requests=game.requests.slice(0,30);
+log(type+" "+asset+" request — "+amount+" — "+status);
+}
+
+function demoDeposit(asset){
+const amount=prompt("Enter a demo "+asset+" deposit amount:");
+if(amount===null)return;
+const value=Number(amount);
+if(!Number.isFinite(value)||value<=0){alert("Enter a valid amount.");return;}
+addRequest("Deposit",value,"Demo Only",asset,"");
+save();render();
+alert("Demo request recorded. No cryptocurrency was transferred or credited.");
+}
+
+function updatePayout(){
+const amount=Number(document.getElementById("wdAmount").value);
+const payout=Number.isFinite(amount)&&amount>=1000?amount/1000:0;
+document.getElementById("payout").textContent=payout.toLocaleString(undefined,{maximumFractionDigits:4});
+}
+
+function withdraw(){
+const amount=Number(document.getElementById("wdAmount").value);
+const address=document.getElementById("wdAddress").value.trim();
+const msg=document.getElementById("wdMessage");
+
+if(!Number.isSafeInteger(amount)||amount<1000){
+msg.textContent="Minimum withdrawal is 1,000 Gold.";return;
+}
+if(amount>game.gold){msg.textContent="Insufficient Gold balance.";return;}
+if(address.length<10){msg.textContent="Enter a demo wallet address.";return;}
+
+addRequest("Withdrawal",amount,"Demo Only","Gold",address);
+document.getElementById("wdAmount").value="";
+document.getElementById("wdAddress").value="";
+msg.textContent="Demo request recorded. No funds were transferred.";
+save();render();
+}
+
+function tab(id,button){
+document.querySelectorAll("main section").forEach(s=>s.classList.add("hidden"));
+document.getElementById(id).classList.remove("hidden");
+document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
+button.classList.add("active");
+}
+
+catchUp();
+render();
+
+setInterval(()=>{
+produce(1);
+save();
+render();
+},1000);
+
+document.addEventListener("visibilitychange",()=>{
+if(!document.hidden){catchUp();render();}
+else save();
+});
+window.addEventListener("pagehide",save);
+</script>
+</body>
+</html>
